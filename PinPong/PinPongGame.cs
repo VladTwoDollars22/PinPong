@@ -3,6 +3,7 @@ using System.Reflection;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PinPong
 {
@@ -35,6 +36,8 @@ namespace PinPong
         private GameObject _border2;
 
         private GameObject _projectile;
+
+        private SFML.Graphics.Font _font;
         public void GameProcess()
         {
             Initialisation();
@@ -44,14 +47,16 @@ namespace PinPong
                 window.DispatchEvents();
                 InputProcess();
                 Logic();
-                Draw();
+                Render();
             }
         }
         private void Initialisation()
         {
             window.Closed += WindowClosed;
 
-            _projectile = new(new Vector2f(800, 450), new Vector2f(0.05f, 0.05f), "textures\\asteroid.png");
+            _font = new SFML.Graphics.Font("fonts\\font.ttf");
+
+            _projectile = new(new Vector2f(760, 450), new Vector2f(0.05f, 0.05f), "textures\\asteroid.png");
             _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), "textures\\barrier.jpg");
             _border2 = new(new Vector2f(0, 880), new Vector2f(5f,0.1f), "textures\\barrier.jpg");
 
@@ -99,10 +104,18 @@ namespace PinPong
             RenderWindow w = (RenderWindow)sender;
             w.Close();
         }
-        private void Draw()
+        private void Render()
         {
             window.Clear(Color.Black);
 
+            Draw();
+
+            DrawText();
+
+            window.Display();
+        }
+        private void Draw()
+        {
             window.Draw(_player1.playerObj.GetSprite());
             window.Draw(_player2.playerObj.GetSprite());
 
@@ -113,8 +126,20 @@ namespace PinPong
             window.Draw(_player2.outObj.GetSprite());
 
             window.Draw(_projectile.GetSprite());
+        }
+        private void DrawText()
+        {
+            SFML.Graphics.Text text = new SFML.Graphics.Text(GetTextFilling(), _font ,50)
+            {
+                Position = new Vector2f(750, 100),
+                FillColor = Color.White 
+            };
 
-            window.Display();
+            window.Draw(text);
+        }
+        private string GetTextFilling()
+        {
+            return _player1.wins.ToString() + ":" + _player2.wins.ToString();
         }
         private void InputProcess()
         {
@@ -144,6 +169,10 @@ namespace PinPong
             if (Keyboard.IsKeyPressed(Keyboard.Key.Down))
             {
                 _player2.playerObj.SetVelocity(new Vector2f(0, 1));
+            }
+            if (Keyboard.IsKeyPressed(Keyboard.Key.R))
+            {
+                ResetProjectile();
             }
         }
         private Vector2f GetRandomVelocity()
