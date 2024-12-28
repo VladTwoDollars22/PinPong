@@ -8,6 +8,7 @@ namespace PinPong
         private Texture _texture;
         private Sprite _sprite;
         private Vector2f _velocity;
+        public Sprite GetSprite() => _sprite;
         public GameObject(Vector2f spawnPosition,Vector2f scale,string textureName)
         {
             _texture = new Texture(textureName);
@@ -34,6 +35,17 @@ namespace PinPong
             {
                 _velocity.Y = -_velocity.Y;
             }
+        }
+        public FloatRect GetBounds()
+        {
+            return _sprite.GetGlobalBounds();
+        }
+        public bool isFasedWith(GameObject obj)
+        {
+            FloatRect spriteBounds = GetBounds();
+            FloatRect facedObjBounds = obj.GetBounds();
+
+            return spriteBounds.Intersects(facedObjBounds);
         }
     }
 }
