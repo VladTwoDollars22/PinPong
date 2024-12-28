@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -16,9 +17,9 @@ namespace PinPong
 
         public Player(Vector2f playerSpawnPoint,Vector2f outObjPosition)
         {
-            playerObj = new(new SFML.System.Vector2f(0, 0), new SFML.System.Vector2f(0.1f, 0.1f), playerTexture);
+            playerObj = new(playerSpawnPoint, new Vector2f(0.1f, 0.1f), playerTexture);
 
-            outObj = new(new SFML.System.Vector2f(100, 100), new SFML.System.Vector2f(0.1f, 0.1f), finishTexture);
+            outObj = new(outObjPosition, new Vector2f(0.1f, 0.9f), finishTexture);
 
             wins = 0;
         }
@@ -50,12 +51,12 @@ namespace PinPong
         {
             window.Closed += WindowClosed;
 
-            _projectile = new(new SFML.System.Vector2f(10, 10), new SFML.System.Vector2f(0.1f, 0.1f), "textures\\asteroid.png");
-            _border1 = new(new SFML.System.Vector2f(50, 50), new SFML.System.Vector2f(0.1f, 0.1f), "textures\\barrier.jpg");
-            _border2 = new(new SFML.System.Vector2f(50, 25), new SFML.System.Vector2f(0.1f, 0.1f), "textures\\barrier.jpg");
+            _projectile = new(new Vector2f(800, 450), new Vector2f(0.05f, 0.05f), "textures\\asteroid.png");
+            _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), "textures\\barrier.jpg");
+            _border2 = new(new Vector2f(0, 880), new Vector2f(5f,0.1f), "textures\\barrier.jpg");
 
-            _player1 = new Player(new Vector2f(35 , 300),new Vector2f(0 , 0));
-            _player2 = new Player(new Vector2f(35, 300), new Vector2f(0, 0));
+            _player1 = new Player(new Vector2f(35 , 450),new Vector2f(0 , 0));
+            _player2 = new Player(new Vector2f(1550, 450), new Vector2f(1580, 0));
         }
         private void Logic()
         {
@@ -83,11 +84,13 @@ namespace PinPong
             if (_projectile.isFasedWith(_player1.outObj))
             {
                 _player2.wins++;
+                ResetProjectile();
             }
 
             if (_projectile.isFasedWith(_player2.outObj))
             {
                 _player1.wins++;
+                ResetProjectile();
             }
         }
 
@@ -115,28 +118,47 @@ namespace PinPong
         }
         private void InputProcess()
         {
-            _player1.playerObj.SetVelocity(new SFML.System.Vector2f(0, 0));
-            _player2.playerObj.SetVelocity(new SFML.System.Vector2f(0, 0));
+            _player1.playerObj.SetVelocity(new Vector2f(0, 0));
+            _player2.playerObj.SetVelocity(new Vector2f(0, 0));
+
+            if(_projectile.GetVelocity() == new Vector2f(0,0) && Keyboard.IsKeyPressed(Keyboard.Key.Space))
+            {
+                _projectile.SetVelocity(GetRandomVelocity());
+            }
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
-                _player1.playerObj.SetVelocity(new SFML.System.Vector2f(0, -1));
+                _player1.playerObj.SetVelocity(new Vector2f(0, -1));
             }
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.S))
             {
-                _player1.playerObj.SetVelocity(new SFML.System.Vector2f(0, 1));
+                _player1.playerObj.SetVelocity(new Vector2f(0, 1));
             }
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
             {
-                _player2.playerObj.SetVelocity(new SFML.System.Vector2f(0, 1));
+                _player2.playerObj.SetVelocity(new Vector2f(0, -1));
             }
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.Down))
             {
-                _player2.playerObj.SetVelocity(new SFML.System.Vector2f(0, -1));
+                _player2.playerObj.SetVelocity(new Vector2f(0, 1));
             }
+        }
+        private Vector2f GetRandomVelocity()
+        {
+            Random rand = new Random();
+
+            float randomX = (float)(rand.NextDouble() * 1.0 - 0.5); 
+            float randomY = (float)(rand.NextDouble() * 1.0 - 0.5); 
+
+            return new Vector2f(randomX, randomY);
+        }
+        private void ResetProjectile()
+        {
+            _projectile.SetVelocity(new Vector2f(0,0));
+            _projectile.SetPosition(new Vector2f(800, 450));
         }
     }
 }
