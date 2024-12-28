@@ -38,6 +38,8 @@ namespace PinPong
         private GameObject _projectile;
 
         private SFML.Graphics.Font _font;
+
+        private SFML.Graphics.Text _text;
         public void GameProcess()
         {
             Initialisation();
@@ -59,6 +61,12 @@ namespace PinPong
             _projectile = new(new Vector2f(760, 450), new Vector2f(0.05f, 0.05f), "textures\\asteroid.png");
             _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), "textures\\barrier.jpg");
             _border2 = new(new Vector2f(0, 880), new Vector2f(5f,0.1f), "textures\\barrier.jpg");
+
+            _text = new SFML.Graphics.Text(GetTextFilling(), _font, 50)
+            {
+                Position = new Vector2f(750, 100),
+                FillColor = Color.White
+            };
 
             _player1 = new Player(new Vector2f(35 , 450),new Vector2f(0 , 0));
             _player2 = new Player(new Vector2f(1550, 450), new Vector2f(1580, 0));
@@ -108,13 +116,13 @@ namespace PinPong
         {
             window.Clear(Color.Black);
 
-            Draw();
+            DrawObjects();
 
             DrawText();
 
             window.Display();
         }
-        private void Draw()
+        private void DrawObjects()
         {
             window.Draw(_player1.playerObj.GetSprite());
             window.Draw(_player2.playerObj.GetSprite());
@@ -129,13 +137,8 @@ namespace PinPong
         }
         private void DrawText()
         {
-            SFML.Graphics.Text text = new SFML.Graphics.Text(GetTextFilling(), _font ,50)
-            {
-                Position = new Vector2f(750, 100),
-                FillColor = Color.White 
-            };
-
-            window.Draw(text);
+            _text.DisplayedString = GetTextFilling();
+            window.Draw(_text);
         }
         private string GetTextFilling()
         {
