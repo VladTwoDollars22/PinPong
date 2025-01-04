@@ -8,6 +8,7 @@ namespace PinPong
         private Texture _texture;
         private Sprite _sprite;
         private Vector2f _velocity;
+        private float speed;
         public Sprite GetSprite() => _sprite;
         public Vector2f GetVelocity() => _velocity;
         public GameObject(Vector2f spawnPosition,Vector2f scale,string textureName)
@@ -17,6 +18,8 @@ namespace PinPong
 
             _sprite.Position = spawnPosition;
             _sprite.Scale = scale;
+
+            speed = 1000;
         }
         public void SetVelocity(Vector2f velocity)
         {

@@ -6,23 +6,6 @@ using SFML.Window;
 
 namespace PinPong
 {
-    public struct Player
-    {
-        public GameObject playerObj;
-        public GameObject outObj;
-        public int wins;
-
-        private string playerTexture = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\textures\player.jpg");
-        private string finishTexture = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\textures\out.jpg");
-
-        public Player(Vector2f playerSpawnPoint, Vector2f outObjPosition)
-        {
-            playerObj = new(playerSpawnPoint, new Vector2f(0.1f, 0.1f), playerTexture);
-            outObj = new(outObjPosition, new Vector2f(0.1f, 0.9f), finishTexture);
-            wins = 0;
-        }
-    }
-
     public class PinPongGame
     {
         private Player _player1;
@@ -35,8 +18,11 @@ namespace PinPong
 
         private GameObject _projectile;
 
-        private SFML.Graphics.Font _font;
-        private SFML.Graphics.Text _text;
+        private List<GameObject> movableObjects;
+        private List<GameObject> drawableObjects;
+
+        private Font _font;
+        private Text _text;
 
         public void GameProcess()
         {
@@ -53,20 +39,36 @@ namespace PinPong
 
         private void Initialisation()
         {
-            window.Closed += WindowClosed;
+            InitializeWindowEvents();
+            InitializeGameObjects();
+            InitializePlayers();
+        }
 
-            _font = new SFML.Graphics.Font(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\fonts\font.ttf"));
+        private void InitializeWindowEvents()
+        {
+            window.Closed += WindowClosed;
+        }
+
+        private void InitializeGameObjects()
+        {
+            _font = new Font(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\fonts\font.ttf"));
 
             _projectile = new(new Vector2f(760, 450), new Vector2f(0.05f, 0.05f), @"..\..\..\textures\asteroid.png");
             _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), @"..\..\..\textures\barrier.jpg");
             _border2 = new(new Vector2f(0, 880), new Vector2f(5f, 0.1f), @"..\..\..\textures\barrier.jpg");
 
-            _text = new SFML.Graphics.Text(GetTextFilling(), _font, 50)
+            _text = new Text(GetTextFilling(), _font, 50)
             {
                 Position = new Vector2f(750, 100),
                 FillColor = Color.White
             };
 
+            movableObjects = new List<GameObject> { _projectile, _player1.playerObj, _player2.playerObj };
+            drawableObjects = new List<GameObject> { _projectile, _border1, _border2, _player1.playerObj, _player2.playerObj };
+        }
+
+        private void InitializePlayers()
+        {
             _player1 = new Player(new Vector2f(35, 450), new Vector2f(0, 0));
             _player2 = new Player(new Vector2f(1550, 450), new Vector2f(1580, 0));
         }
@@ -79,9 +81,10 @@ namespace PinPong
 
         private void MovingLogic()
         {
-            _player1.playerObj.Move();
-            _player2.playerObj.Move();
-            _projectile.Move();
+            foreach(GameObject obj in movableObjects)
+            {
+                obj.Move();
+            }
         }
 
         private void FacesLogic()
@@ -128,16 +131,10 @@ namespace PinPong
 
         private void DrawObjects()
         {
-            window.Draw(_player1.playerObj.GetSprite());
-            window.Draw(_player2.playerObj.GetSprite());
-
-            window.Draw(_border1.GetSprite());
-            window.Draw(_border2.GetSprite());
-
-            window.Draw(_player1.outObj.GetSprite());
-            window.Draw(_player2.outObj.GetSprite());
-
-            window.Draw(_projectile.GetSprite());
+            foreach (GameObject obj in drawableObjects)
+            {
+                window.Draw(obj.GetSprite());
+            }
         }
 
         private void DrawText()
