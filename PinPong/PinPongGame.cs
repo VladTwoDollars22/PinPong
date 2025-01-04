@@ -11,7 +11,7 @@ namespace PinPong
         private Player _player1;
         private Player _player2;
 
-        private RenderWindow window = new RenderWindow(new VideoMode(1600, 900), "Game window");
+        private RenderWindow window;
 
         private GameObject _border1;
         private GameObject _border2;
@@ -24,10 +24,17 @@ namespace PinPong
         private Font _font;
         private Text _text;
 
-        private int _updateTrigger = 800;
+        private int _updateTrigger;
 
         private float deltaTime;
 
+
+        public PinPongGame()
+        {
+            window = new RenderWindow(new VideoMode(1600, 900), "Game window");
+
+            _updateTrigger = 800;
+        }
         public void GameProcess()
         {
             Initialisation();
