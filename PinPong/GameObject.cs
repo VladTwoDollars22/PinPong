@@ -9,8 +9,10 @@ namespace PinPong
         private Sprite _sprite;
         private Vector2f _velocity;
         private float speed;
+
         public Sprite GetSprite() => _sprite;
         public Vector2f GetVelocity() => _velocity;
+
         public GameObject(Vector2f spawnPosition,Vector2f scale,string textureName)
         {
             _texture = new Texture(textureName);
@@ -21,13 +23,13 @@ namespace PinPong
 
             speed = 1000;
         }
-        public void SetVelocity(Vector2f velocity)
+        public void SetVelocity(Vector2f direction)
         {
-            _velocity = velocity;
+            _velocity = Normalize(direction);
         }
-        public void Move()
+        public void Move(float deltaTime)
         {
-            _sprite.Position += _velocity;
+            _sprite.Position += _velocity * speed * deltaTime;
         }
         public void Reflect(bool isHorizontalWall, bool isWerticalWall)
         {
@@ -54,6 +56,19 @@ namespace PinPong
         public void SetPosition(Vector2f pos)
         {
             _sprite.Position = pos;
+        }
+        private Vector2f Normalize(Vector2f vector)
+        {
+            float length = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
+
+            if (length > 0)
+            {
+                return new Vector2f(vector.X / length, vector.Y / length);
+            }
+            else
+            {
+                return new Vector2f(0, 0); 
+            }
         }
     }
 }

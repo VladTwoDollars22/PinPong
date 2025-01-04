@@ -3,15 +3,21 @@ namespace PinPong
 {
     public static class PathUtilite
     {
-        private static int repeats = 3;
+        private static int repeatsBorder = 4;
         public static string CalculatePath(string pathToOBj)
         {
-            string curentPath = Directory.GetCurrentDirectory() + pathToOBj;
+            string pathDirectory = Directory.GetCurrentDirectory();
+            string curentPath = Path.Combine(pathDirectory,pathToOBj);
 
-            while (!File.Exists(curentPath) && repeats <= 4)
+            int repeats = 0;
+
+            while (!File.Exists(curentPath) && repeats <= repeatsBorder)
             {
                 Console.WriteLine(repeats);
-                curentPath = Path.GetFullPath(Path.Combine(curentPath, ".."));
+                pathToOBj = Path.GetFullPath(Path.Combine(pathToOBj, ".."));
+                curentPath = Path.Combine(pathDirectory, pathToOBj);
+
+                repeats++;
             }
 
             if (!File.Exists(curentPath))

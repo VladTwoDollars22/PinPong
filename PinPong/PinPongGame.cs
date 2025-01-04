@@ -24,24 +24,39 @@ namespace PinPong
         private Font _font;
         private Text _text;
 
+        private int _updateTrigger = 800;
+
+        private float deltaTime;
+
         public void GameProcess()
         {
             Initialisation();
 
+            long lastFrameTime = 0;
+            Clock clock = new Clock();
+
             while (window.IsOpen)
             {
-                window.DispatchEvents();
                 InputProcess();
-                Logic();
-                Render();
+
+                long currentTime = clock.ElapsedTime.AsMicroseconds();
+                deltaTime = currentTime - lastFrameTime;
+
+                if (deltaTime > _updateTrigger)
+                {
+                    lastFrameTime = currentTime;
+
+                    Logic();
+                    Render();
+                }
             }
         }
 
         private void Initialisation()
         {
             InitializeWindowEvents();
-            InitializeGameObjects();
             InitializePlayers();
+            InitializeGameObjects();
         }
 
         private void InitializeWindowEvents()
@@ -83,7 +98,7 @@ namespace PinPong
         {
             foreach(GameObject obj in movableObjects)
             {
-                obj.Move();
+                obj.Move(deltaTime);
             }
         }
 
@@ -150,6 +165,8 @@ namespace PinPong
 
         private void InputProcess()
         {
+            window.DispatchEvents();
+
             _player1.playerObj.SetVelocity(new Vector2f(0, 0));
             _player2.playerObj.SetVelocity(new Vector2f(0, 0));
 
