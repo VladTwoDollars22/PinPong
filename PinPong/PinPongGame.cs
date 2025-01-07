@@ -79,9 +79,9 @@ namespace PinPong
         {
             _font = new Font(PathUtilite.CalculatePath("fonts\\font.ttf"));
 
-            _projectile = new(new Vector2f(760, 450), new Vector2f(0.05f, 0.05f), PathUtilite.CalculatePath("textures\\asteroid.png"));
-            _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), PathUtilite.CalculatePath("textures\\barrier.jpg"));
-            _border2 = new(new Vector2f(0, 880), new Vector2f(5f, 0.1f), PathUtilite.CalculatePath("textures\\barrier.jpg"));
+            _projectile = new(Config.projectilePosition, new Vector2f(0.05f, 0.05f), PathUtilite.CalculatePath("textures\\asteroid.png"));
+            _border1 = new(Config.border1Position, new Vector2f(5f, 0.1f), PathUtilite.CalculatePath("textures\\barrier.jpg"));
+            _border2 = new(Config.border2Position, new Vector2f(5f, 0.1f), PathUtilite.CalculatePath("textures\\barrier.jpg"));
 
             _text = new Text(GetTextFilling(), _font, 50)
             {
@@ -95,8 +95,8 @@ namespace PinPong
 
         private void InitializePlayers()
         {
-            _player1 = new Player(new Vector2f(35, 450), new Vector2f(0, 0));
-            _player2 = new Player(new Vector2f(1550, 450), new Vector2f(1580, 0));
+            _player1 = new Player(Config.player1Position, Config.out1Position);
+            _player2 = new Player(Config.player2Position, Config.out2Position);
         }
 
         private void Logic()
@@ -181,7 +181,6 @@ namespace PinPong
 
         private string GetTextFilling()
         {
-            Console.WriteLine(_player1.wins + " " + _player2.wins);
             return _player1.wins.ToString() + ":" + _player2.wins.ToString();
         }
 
