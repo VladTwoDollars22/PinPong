@@ -13,8 +13,8 @@ namespace PinPong
         public GameObject outObj;
         public int wins;
 
-        private string playerTexture = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\textures\player.jpg");
-        private string finishTexture = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\textures\out.jpg");
+        private string playerTexture = PathUtilite.CalculatePath("textures\\player.jpg");
+        private string finishTexture = PathUtilite.CalculatePath("textures\\out.jpg");
 
         public Player(Vector2f playerSpawnPoint, Vector2f outObjPosition)
         {

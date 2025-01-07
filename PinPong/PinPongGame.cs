@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -24,30 +25,33 @@ namespace PinPong
         private Font _font;
         private Text _text;
 
-        private int _updateTrigger;
+        private float _updateTrigger;
 
         private float deltaTime;
 
+        private int targetFPS;
 
         public PinPongGame()
         {
             window = new RenderWindow(new VideoMode(1600, 900), "Game window");
 
-            _updateTrigger = 800;
+            targetFPS = 120;
+
+            _updateTrigger = 1f / targetFPS;
         }
         public void GameProcess()
         {
             Initialisation();
 
-            long lastFrameTime = 0;
             Clock clock = new Clock();
+            long lastFrameTime = clock.ElapsedTime.AsMilliseconds();
 
             while (window.IsOpen)
             {
-                InputProcess();
+                long currentTime = clock.ElapsedTime.AsMilliseconds();
+                deltaTime = (currentTime - lastFrameTime) / 1000f;
 
-                long currentTime = clock.ElapsedTime.AsMicroseconds();
-                deltaTime = currentTime - lastFrameTime;
+                InputProcess();
 
                 if (deltaTime > _updateTrigger)
                 {
@@ -73,11 +77,11 @@ namespace PinPong
 
         private void InitializeGameObjects()
         {
-            _font = new Font(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\fonts\font.ttf"));
+            _font = new Font(PathUtilite.CalculatePath("fonts\\font.ttf"));
 
-            _projectile = new(new Vector2f(760, 450), new Vector2f(0.05f, 0.05f), @"..\..\..\textures\asteroid.png");
-            _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), @"..\..\..\textures\barrier.jpg");
-            _border2 = new(new Vector2f(0, 880), new Vector2f(5f, 0.1f), @"..\..\..\textures\barrier.jpg");
+            _projectile = new(new Vector2f(760, 450), new Vector2f(0.05f, 0.05f), PathUtilite.CalculatePath("textures\\asteroid.png"));
+            _border1 = new(new Vector2f(0, 0), new Vector2f(5f, 0.1f), PathUtilite.CalculatePath("textures\\barrier.jpg"));
+            _border2 = new(new Vector2f(0, 880), new Vector2f(5f, 0.1f), PathUtilite.CalculatePath("textures\\barrier.jpg"));
 
             _text = new Text(GetTextFilling(), _font, 50)
             {
@@ -111,25 +115,31 @@ namespace PinPong
 
         private void FacesLogic()
         {
-            if (_projectile.isFasedWith(_player1.playerObj) || _projectile.isFasedWith(_player2.playerObj))
+            if (_projectile.IsFasedWith(_player1.playerObj) || _projectile.IsFasedWith(_player2.playerObj))
             {
                 _projectile.Reflect(false, true);
             }
 
-            if (_projectile.isFasedWith(_border1) || _projectile.isFasedWith(_border2))
+            if (_projectile.IsFasedWith(_border1) || _projectile.IsFasedWith(_border2))
             {
                 _projectile.Reflect(true, false);
             }
 
-            if (_projectile.isFasedWith(_player1.outObj))
+            if (_projectile.IsFasedWith(_player1.outObj))
             {
                 _player2.wins++;
+
+                UpdateTextFilling();
+
                 ResetProjectile();
             }
 
-            if (_projectile.isFasedWith(_player2.outObj))
+            if (_projectile.IsFasedWith(_player2.outObj))
             {
                 _player1.wins++;
+
+                UpdateTextFilling();
+
                 ResetProjectile();
             }
         }
@@ -161,12 +171,17 @@ namespace PinPong
 
         private void DrawText()
         {
-            _text.DisplayedString = GetTextFilling();
             window.Draw(_text);
+        }
+
+        private void UpdateTextFilling()
+        {
+            _text.DisplayedString = GetTextFilling();
         }
 
         private string GetTextFilling()
         {
+            Console.WriteLine(_player1.wins + " " + _player2.wins);
             return _player1.wins.ToString() + ":" + _player2.wins.ToString();
         }
 

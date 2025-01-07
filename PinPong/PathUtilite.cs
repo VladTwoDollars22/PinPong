@@ -1,31 +1,29 @@
-﻿
-namespace PinPong
+﻿namespace PinPong
 {
     public static class PathUtilite
     {
-        private static int repeatsBorder = 4;
-        public static string CalculatePath(string pathToOBj)
+        private static int repeatsBorder = 5;
+        public static string CalculatePath(string pathToObj)
         {
-            string pathDirectory = Directory.GetCurrentDirectory();
-            string curentPath = Path.Combine(pathDirectory,pathToOBj);
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string currentPath = Path.Combine(currentDirectory, pathToObj);
 
             int repeats = 0;
 
-            while (!File.Exists(curentPath) && repeats <= repeatsBorder)
+            while (!File.Exists(currentPath) && repeats < repeatsBorder)
             {
-                Console.WriteLine(repeats);
-                pathToOBj = Path.GetFullPath(Path.Combine(pathToOBj, ".."));
-                curentPath = Path.Combine(pathDirectory, pathToOBj);
+                currentDirectory = Path.GetFullPath(Path.Combine(currentDirectory, ".."));
+                currentPath = Path.Combine(currentDirectory, pathToObj);
 
                 repeats++;
             }
 
-            if (!File.Exists(curentPath))
+            if (!File.Exists(currentPath))
             {
-                Console.WriteLine("Об'єкт не знайдено");
+                return string.Empty; 
             }
 
-            return curentPath;
+            return currentPath;
         }
     }
 }

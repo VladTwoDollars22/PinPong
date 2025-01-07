@@ -21,15 +21,15 @@ namespace PinPong
             _sprite.Position = spawnPosition;
             _sprite.Scale = scale;
 
-            speed = 1000;
+            speed = 340;
         }
         public void SetVelocity(Vector2f direction)
         {
-            _velocity = Normalize(direction);
+            _velocity = Normalize(direction) * speed;
         }
         public void Move(float deltaTime)
         {
-            _sprite.Position += _velocity * speed * deltaTime;
+            _sprite.Position += _velocity * deltaTime;
         }
         public void Reflect(bool isHorizontalWall, bool isWerticalWall)
         {
@@ -46,7 +46,7 @@ namespace PinPong
         {
             return _sprite.GetGlobalBounds();
         }
-        public bool isFasedWith(GameObject obj)
+        public bool IsFasedWith(GameObject obj)
         {
             FloatRect spriteBounds = GetBounds();
             FloatRect facedObjBounds = obj.GetBounds();
